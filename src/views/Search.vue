@@ -1,12 +1,13 @@
 <template>
   <div class="home">
-    TODO
+    Handle search for {{query}}
   </div>
 </template>
 
 <script>
 
 export default {
-  name: 'Home'
+  name: 'Home',
+  props: ['query']
 }
 </script>
