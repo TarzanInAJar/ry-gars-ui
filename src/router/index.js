@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Search from '../views/Search'
+import CigarProfile from "@/views/CigarProfile";
 
 Vue.use(VueRouter)
 
@@ -24,7 +25,16 @@ Vue.use(VueRouter)
     name: 'Search',
     component: Search,
     props: route => ({query: route.query.text})
-
+  },
+  {
+      path: '/cigar/:brand/:name',
+      name: 'Cigar',
+      component: CigarProfile
+  },
+  {
+    path: '/cigar/:brand/:subBrand/:name',
+    name: 'CigarWithSubBrand',
+    component: CigarProfile
   }
 ]
 

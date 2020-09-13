@@ -43,19 +43,28 @@
         </div>
         <div>
           <v-autocomplete
-              v-model="text"
+              v-model="selectedCigar"
               :items="items"
               :loading="isLoading"
               :search-input.sync="search"
-              hide-no-data
-              hide-selected
-              placeholder="Search for a Gar!"
+              :placeholder="searchPlaceholder"
               single-line
               hide-details
               rounded
               dense
               solo-inverted
+              return-object
+              item-text="name"
+              item-value="id"
+              ref="searchBox"
+              :filter="filterCigars"
           >
+            <template v-slot:item="data">
+              {{cigarLabelFromResult(data.item)}}
+            </template>
+            <template v-slot:selection="data">
+              {{cigarLabelFromResult(data.item)}}
+            </template>
 
           </v-autocomplete>
         </div>
@@ -74,6 +83,7 @@
 </template>
 
 <script>
+import BackendService from "@/services/BackendService"
 export default {
   name: 'App',
 
@@ -81,24 +91,68 @@ export default {
     drawer: false,
     isLoading: false,
     search: null,
-    text: null,
+    selectedCigar: null,
     items: []
   }),
   watch: {
     search(val) {
-      if (val && val !== this.text) {
+      if (val) {
         this.searchAPI(val)
+      } else {
+        this.items = []
+      }
+    },
+    selectedCigar(val) {
+      if (val) {
+        if (val.subBrand) {
+          this.$router.push({ name: 'CigarWithSubBrand', params: { name: val.name, brand: val.brand, subBrand: val.subBrand } })
+        } else {
+          this.$router.push({ name: 'Cigar', params: { name: val.name, brand: val.brand } })
+        }
+        this.selectedCigar = null
+        this.search = ''
+        this.items = []
+        this.$refs.searchBox.lazyValue = null // bug in vuetify
+      }
+    }
+  },
+  computed: {
+    searchPlaceholder() {
+      if (this.$route.params.brand) {
+        return this.cigarLabel(this.$route.params.brand, this.$route.params.name, this.$route.params.subBrand)
+      } else {
+        return "Search for a Gar!"
       }
     }
   },
   methods: {
-    searchAPI() {
+    cigarLabelFromResult(cigarSearchResult) {
+      return this.cigarLabel(cigarSearchResult.brand, cigarSearchResult.name, cigarSearchResult.subBrand)
+    },
+    cigarLabel(brand, name, subBrand) {
+      return brand + ' ' +
+          (subBrand ? subBrand + ' ' : '')  +
+          name
+    },
+    searchAPI(query) {
       this.isLoading = true;
-      // TODO replace with real api
-      setTimeout(() => {
-        this.items = ['change', 'me']
-        this.isLoading = false
-      }, 500)
+      BackendService.searchCigars(query, (err, response) => {
+        if (err) {
+          // TODO handle
+          console.log(err)
+        }
+        this.items = response;
+        this.isLoading = false;
+      });
+    },
+    filterCigars(item, queryText) {
+      return (
+          item.brand.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >
+          -1 ||
+          item.subBrand.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >
+          -1 ||
+          item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
+      );
     }
   }
 };
