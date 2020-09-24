@@ -41,7 +41,7 @@
           <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
           <v-toolbar-title class="d-none d-sm-flex">Ry-Gars</v-toolbar-title>
         </div>
-        <div>
+        <div style="width: 30%">
           <v-autocomplete
               v-model="selectedCigar"
               :items="itemsPlusSearch"
@@ -50,6 +50,9 @@
               :placeholder="searchPlaceholder"
               single-line
               hide-details
+              hide-no-data
+              hide-selected
+              auto-select-first
               rounded
               dense
               solo-inverted
