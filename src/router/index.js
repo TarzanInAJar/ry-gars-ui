@@ -30,11 +30,6 @@ Vue.use(VueRouter)
       path: '/cigar/:brand/:name',
       name: 'Cigar',
       component: CigarProfile
-  },
-  {
-    path: '/cigar/:brand/:subBrand/:name',
-    name: 'CigarWithSubBrand',
-    component: CigarProfile
   }
 ]
 

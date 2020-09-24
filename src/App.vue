@@ -109,17 +109,17 @@ export default {
         } else {
           this.$router.push({ name: 'Cigar', params: { name: val.name, brand: val.brand } })
         }
-        this.selectedCigar = null
         this.search = ''
         this.items = []
         this.$refs.searchBox.lazyValue = null // bug in vuetify
+        this.selectedCigar = null
       }
     }
   },
   computed: {
     searchPlaceholder() {
       if (this.$route.params.brand) {
-        return this.cigarLabel(this.$route.params.brand, this.$route.params.name, this.$route.params.subBrand)
+        return this.cigarLabel(this.$route.params.brand, this.$route.params.name)
       } else {
         return "Search for a Gar!"
       }
@@ -136,12 +136,10 @@ export default {
   },
   methods: {
     cigarLabelFromResult(cigarSearchResult) {
-      return this.cigarLabel(cigarSearchResult.brand, cigarSearchResult.name, cigarSearchResult.subBrand)
+      return this.cigarLabel(cigarSearchResult.brand, cigarSearchResult.name)
     },
-    cigarLabel(brand, name, subBrand) {
-      return brand + ' ' +
-          (subBrand ? subBrand + ' ' : '')  +
-          name
+    cigarLabel(brand, name) {
+      return brand + ' ' + name
     },
     searchAPI(query) {
       this.isLoading = true;
@@ -158,8 +156,9 @@ export default {
       return (
           item.brand.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >
           -1 ||
-          item.subBrand.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >
-          -1 ||
+          (item.tags && item.tags.findIndex((tag) => {
+            return tag.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
+          }) > -1 )||
           item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
       );
     }
