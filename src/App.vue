@@ -44,7 +44,7 @@
         <div>
           <v-autocomplete
               v-model="selectedCigar"
-              :items="items"
+              :items="itemsPlusSearch"
               :loading="isLoading"
               :search-input.sync="search"
               :placeholder="searchPlaceholder"
@@ -104,8 +104,8 @@ export default {
     },
     selectedCigar(val) {
       if (val) {
-        if (val.subBrand) {
-          this.$router.push({ name: 'CigarWithSubBrand', params: { name: val.name, brand: val.brand, subBrand: val.subBrand } })
+        if (val.id === -1) { // searchAll item
+          this.$router.push({ name: 'Search', query: {text: this.search}})
         } else {
           this.$router.push({ name: 'Cigar', params: { name: val.name, brand: val.brand } })
         }
@@ -123,6 +123,15 @@ export default {
       } else {
         return "Search for a Gar!"
       }
+    },
+    itemsPlusSearch() {
+      if (this.search) {
+        let searchAll = { id: -1, name: "Search all results for " + this.search, brand: ''}
+        return this.items.concat(searchAll);
+      } else {
+        return this.items;
+      }
+
     }
   },
   methods: {
