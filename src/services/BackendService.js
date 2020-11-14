@@ -13,6 +13,14 @@ export default {
             .catch(function (error) {
                 callback(error)
             })
+    },
+    cigarInfo(brand, name, callback) {
+        axios.get(`/api/cigars/${brand}/${name}`)
+            .then((response) => {
+                callback(null, response.data);
+            }).catch((error) => {
+                callback(error);
+        })
     }
 }
 
